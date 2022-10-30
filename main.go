@@ -59,6 +59,22 @@ func main() {
 		return c.SendString(string(statsJSON))
 	})
 
+	app.Get("/states", func(c *fiber.Ctx) error {
+		statesJSON, err := json.Marshal(gameEngine.States)
+		if err != nil {
+			return err
+		}
+		return c.SendString(string(statesJSON))
+	})
+
+	app.Get("/history", func(c *fiber.Ctx) error {
+		historyJSON, err := json.Marshal(gameEngine.EndGameReqs)
+		if err != nil {
+			return err
+		}
+		return c.SendString(string(historyJSON))
+	})
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		startGameRes := gameEngine.startGame()
 		// fmt.Println("startGameRes : ", startGameRes)
