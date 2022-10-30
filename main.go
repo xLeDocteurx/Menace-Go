@@ -76,9 +76,13 @@ func main() {
 	})
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		startGameRes := gameEngine.startGame()
+		startGameRes := gameEngine.startGame(c)
 		// fmt.Println("startGameRes : ", startGameRes)
 
+		Subdomains, err := json.Marshal(startGameRes.Subdomains)
+		if err != nil {
+			return err
+		}
 		DoILive, err := json.Marshal(startGameRes.DoILive)
 		if err != nil {
 			return err
@@ -98,6 +102,7 @@ func main() {
 
         // Render index template
         return c.Render("index", fiber.Map{
+            "Subdomains": string(Subdomains),
             "DoILive": string(DoILive),
             "WhoStartsNext": string(WhoStartsFirst),
 			"States": string(StatesJSON),
@@ -196,7 +201,7 @@ func (this *GameEngine) doILive() bool {
 	return true
 }
 
-func (this *GameEngine) startGame() StartGameRes {
+func (this *GameEngine) startGame(c *fiber.Ctx) StartGameRes {
 	stats := this.makeStats()
 
 	humanWinsCount := 0
@@ -214,6 +219,7 @@ func (this *GameEngine) startGame() StartGameRes {
 	}
 
 	return StartGameRes{
+		c.Subdomains(),
 		this.doILive(),
 		this.WhoStartsNext,
 		this.States,
@@ -378,6 +384,7 @@ type Weights struct {
 }
 
 type StartGameRes struct {
+	Subdomains []string
 	DoILive bool
 	WhoStartsFirst string
 	States []State

@@ -55,12 +55,14 @@
     </table>
   </body>
 
-  <script>
+  <script>Subdomains
+    const Subdomains = JSON.parse('{{.Subdomains}}');
     const doILive = JSON.parse('{{.DoILive}}');
     const whoStarts = JSON.parse('{{.WhoStartsNext}}');
     const states = JSON.parse('{{.States}}');
     const stats = JSON.parse('{{.Stats}}');
     
+    console.log('Subdomains : ', Subdomains);
     console.log('stats : ', stats);
     const statsContainer = document.getElementById("stats-container")
     for (let i = 0; i < Object.keys(stats).length; i++) {
