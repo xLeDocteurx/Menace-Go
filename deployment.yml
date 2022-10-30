@@ -1,0 +1,85 @@
+################
+# Namespace
+###############
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: playground
+---
+################
+# Deployment
+###############
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: menace
+  namespace: playground
+  labels:
+    app: menace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: menace
+  template:
+    metadata:
+      labels:
+        app: menace
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: menace
+        image: europe-west2-docker.pkg.dev/key-autumn-362512/quickstart-docker-repo/dockerized-menace
+        imagePullPolicy: "Always"
+        ports:
+        - containerPort: 3000
+---
+################
+# Service
+###############
+apiVersion: v1
+kind: Service
+metadata:
+  name: menace
+  namespace: playground
+  # labels:
+  #   app: menace
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+  # selector:
+  #   app: menace
+---
+################
+# Endpoint
+###############
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: menace
+  namespace: playground
+  # labels:
+  #   app: menace
+subsets:
+  - addresses:
+      - ip: 10.24.1.42
+    ports:
+      - port: 3000
+# ---
+# ################
+# # ExternalName
+# ###############
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: menace
+#   namespace: playground
+#   # labels:
+#   #   app: menace
+# spec:
+#   type: ExternalName
+#   externalName: lol.com
