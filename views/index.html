@@ -178,7 +178,8 @@
         cellButtons[0].disabled = true;
       }
       // Make a POST request
-      fetch('http://localhost:3000', {
+      // fetch('http://localhost:3000', {
+      fetch(`https://${Subdomains[0]}.lhr.life`, {
         method: 'POST',
         body: JSON.stringify({
           Winner: winner,
