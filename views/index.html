@@ -179,7 +179,7 @@
       }
       // Make a POST request
       // fetch('http://localhost:3000', {
-      fetch(`https://${subdomains[0]}.lhr.life`, {
+      fetch("https://" + subdomains + ".lhr.life", {
         method: 'POST',
         body: JSON.stringify({
           Winner: winner,
