@@ -79,6 +79,10 @@ func main() {
 		startGameRes := gameEngine.startGame()
 		// fmt.Println("startGameRes : ", startGameRes)
 
+		DoILive, err := json.Marshal(startGameRes.DoILive)
+		if err != nil {
+			return err
+		}
 		WhoStartsFirst, err := json.Marshal(startGameRes.WhoStartsFirst)
 		if err != nil {
 			return err
@@ -94,6 +98,7 @@ func main() {
 
         // Render index template
         return c.Render("index", fiber.Map{
+            "DoILive": string(DoILive),
             "WhoStartsNext": string(WhoStartsFirst),
 			"States": string(StatesJSON),
 			"Stats": string(StatsJSON),
