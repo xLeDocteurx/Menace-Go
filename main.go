@@ -209,7 +209,7 @@ func (this *GameEngine) startGame() StartGameRes {
 	}
 
 	return StartGameRes{
-		this.DoILive,
+		this.doILive(),
 		this.WhoStartsNext,
 		this.States,
 		stats,
@@ -373,7 +373,7 @@ type Weights struct {
 }
 
 type StartGameRes struct {
-	DoILive bool
+	d bool()
 	WhoStartsFirst string
 	States []State
 	Stats map[string]string
