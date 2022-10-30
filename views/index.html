@@ -1,0 +1,203 @@
+<html>
+  <head>
+    <title>This is Menace</title>
+  </head>
+  <body>
+    <h1>This is Menace</h1>
+    <h2>Machine Educable Noughts And Crosses Engine</h2>
+    <h3><a href="https://en.wikipedia.org/wiki/Matchbox_Educable_Noughts_and_Crosses_Engine" target="_blank">https://en.wikipedia.org/wiki/Matchbox_Educable_Noughts_and_Crosses_Engine</a></h3>
+    <h3><a href="https://www.mscroggs.co.uk/blog/19" target="_blank">https://www.mscroggs.co.uk/blog/19</a></h3>
+    <hr>
+    <h4>Stats : </h4>
+    <div id="stats-container"></div>
+    <hr>
+    <div id="menu">
+      <i>{{.WhoStartsNext}} started first</i></br>
+      <i>This is <span id="currentPlayer">human</span>'s turn</i></br>
+      <i id="who-wins"></i></br>
+      <button onclick="newGame()">New Game</button>
+    </div>
+  <hr>
+  <table id="grid">
+      <tr>
+        <td>
+            <button style="width: 50px; height: 50px;" id="cell-A" class="cell-button" data-value="0" onclick="makeTurn('human', 'A')"> </button>
+        </td>
+        <td>
+            <button style="width: 50px; height: 50px;" id="cell-B" class="cell-button" data-value="0" onclick="makeTurn('human', 'B')"> </button>
+        </td>
+        <td>
+            <button style="width: 50px; height: 50px;" id="cell-C" class="cell-button" data-value="0" onclick="makeTurn('human', 'C')"> </button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button style="width: 50px; height: 50px;" id="cell-D" class="cell-button" data-value="0" onclick="makeTurn('human', 'D')"> </button>
+        </td>
+        <td>
+          <button style="width: 50px; height: 50px;" id="cell-E" class="cell-button" data-value="0" onclick="makeTurn('human', 'E')"> </button>
+        </td>
+        <td>
+          <button style="width: 50px; height: 50px;" id="cell-F" class="cell-button" data-value="0" onclick="makeTurn('human', 'F')"> </button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <button style="width: 50px; height: 50px;" id="cell-G" class="cell-button" data-value="0" onclick="makeTurn('human', 'G')"> </button>
+        </td>
+        <td>
+          <button style="width: 50px; height: 50px;" id="cell-H" class="cell-button" data-value="0" onclick="makeTurn('human', 'H')"> </button>
+        </td>
+        <td>
+          <button style="width: 50px; height: 50px;" id="cell-I" class="cell-button" data-value="0" onclick="makeTurn('human', 'I')"> </button>
+        </td>
+      </tr>
+    </table>
+  </body>
+
+  <script>
+    const doILive = JSON.parse('{{.DoILive}}');
+    const whoStarts = JSON.parse('{{.WhoStartsNext}}');
+    const states = JSON.parse('{{.States}}');
+    const stats = JSON.parse('{{.Stats}}');
+    
+    console.log('stats : ', stats);
+    const statsContainer = document.getElementById("stats-container")
+    for (let i = 0; i < Object.keys(stats).length; i++) {
+      const statKey = Object.keys(stats)[i]
+      const element = document.createElement("div")
+      element.innerText = `${statKey} : ${stats[statKey]}`
+      statsContainer.appendChild(element)
+    }
+
+    let currentPlayer = whoStarts;
+    const history = [];
+
+    if (currentPlayer == 'robot') {
+        robotPlays()
+    }
+
+    function newGame() {
+      location.reload();
+    }
+
+    function robotPlays() {
+        const currentState = getCurrentState();
+        console.log('states : ', states)
+        console.log('currentState : ', currentState)
+        console.log("states.map(object => object.Id) : ", states.map(object => object.Id))
+        console.log("states.map(object => object.Id).indexOf(currentState) : ", states.map(object => object.Id).indexOf(currentState))
+        const currentWeights = states[states.map(object => object.Id).indexOf(currentState)].Weights;
+        var possibleMoves = [];
+        Object.keys(currentWeights).forEach(weightKey => {
+            for (let i = 0; i < currentWeights[weightKey]; i++) {
+                possibleMoves.push(weightKey);
+            }
+        });
+        const move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+        makeTurn("robot", move);
+    }
+
+    function makeTurn(humanOrRobot, chosenMove) {
+        console.log('makeTurn (humanOrRobot, chosenMove) : ', humanOrRobot, chosenMove);
+      document.getElementById(`cell-${chosenMove}`).innerText = currentPlayer == whoStarts ? 'X' : 'O';
+        // currentPlayer == 'human' && whoStarts == 'human' ? 'X' : 'O';
+      document.getElementById(`cell-${chosenMove}`).disabled = true;
+      document.getElementById(`cell-${chosenMove}`).setAttribute('data-value', currentPlayer == 'human' ? '1' : '2');
+      history.push({ WhosTurn: currentPlayer, CurrentState: getCurrentState(), ChosenMove: chosenMove });
+      currentPlayer = currentPlayer == 'human' ? 'robot' : 'human';
+      document.getElementById('currentPlayer').innerText = currentPlayer;
+
+      doesSomeoneWins(humanOrRobot);
+    }
+
+    function doesSomeoneWins(humanOrRobot) {
+      const currentState = getCurrentState();
+      const rowsToCheck = [
+        // horizontal
+        currentState[0] + currentState[1] + currentState[2],
+        currentState[3] + currentState[4] + currentState[5],
+        currentState[6] + currentState[7] + currentState[8],
+        // vertical
+        currentState[0] + currentState[3] + currentState[6],
+        currentState[1] + currentState[4] + currentState[7],
+        currentState[2] + currentState[5] + currentState[8],
+        // diagonal
+        currentState[0] + currentState[4] + currentState[8],
+        currentState[2] + currentState[4] + currentState[6]
+      ];
+      let winner;
+      if (
+        rowsToCheck.some(row => {
+          return row == '111';
+        })
+      ) {
+        winner = 'human';
+      } else if (
+        rowsToCheck.some(row => {
+          return row == '222';
+        })
+      ) {
+        winner = 'robot';
+      } else if (
+        !currentState.includes("0")
+      ) {
+        winner = 'draw';
+      }
+
+      if (winner) {
+        endGame(winner, history);
+      } else {
+          if(humanOrRobot == "human") {
+            robotPlays()
+          }
+      }
+    }
+
+    function getCurrentState() {
+      const a = document.getElementById('cell-A').getAttribute('data-value');
+      const b = document.getElementById('cell-B').getAttribute('data-value');
+      const c = document.getElementById('cell-C').getAttribute('data-value');
+      const d = document.getElementById('cell-D').getAttribute('data-value');
+      const e = document.getElementById('cell-E').getAttribute('data-value');
+      const f = document.getElementById('cell-F').getAttribute('data-value');
+      const g = document.getElementById('cell-G').getAttribute('data-value');
+      const h = document.getElementById('cell-H').getAttribute('data-value');
+      const i = document.getElementById('cell-I').getAttribute('data-value');
+      return a + b + c + d + e + f + g + h + i;
+    }
+
+    function endGame(winner, history) {
+      document.getElementById(`who-wins`).innerText = `${winner} wins !`;
+
+      const cellButtons = document.getElementsByClassName('cell-button')
+      for(let i = 0; i < cellButtons.length; i++) {
+        cellButtons[0].disabled = true;
+      }
+      // Make a POST request
+      fetch('http://localhost:3000', {
+        method: 'POST',
+        body: JSON.stringify({
+          Winner: winner,
+          History: history
+        }), // The data
+        headers: {
+            'Content-Type': 'text/plain'
+        //   'Content-type': 'application/json; charset=UTF-8' // The type of data you're sending
+        }
+      })
+        .then(function (response) {
+          if (response.ok) {
+            return response.json();
+          }
+          return Promise.reject(response);
+        })
+        .then(function (data) {
+          console.log(data);
+        })
+        .catch(function (error) {
+          console.warn('Something went wrong.', error);
+        });
+    }
+  </script>
+</html>
