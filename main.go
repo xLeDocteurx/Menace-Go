@@ -373,7 +373,7 @@ type Weights struct {
 }
 
 type StartGameRes struct {
-	d bool()
+	DoILive bool
 	WhoStartsFirst string
 	States []State
 	Stats map[string]string
