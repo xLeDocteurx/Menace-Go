@@ -13,7 +13,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: menace
-  namespace: playground
+  # namespace: playground
   labels:
     app: menace
 spec:
@@ -36,42 +36,69 @@ spec:
         - containerPort: 3000
 ---
 ################
-# Service
+# ClusterIp
 ###############
 apiVersion: v1
 kind: Service
 metadata:
-  name: menace
-  namespace: playground
+  name: clip-service
+  # namespace: playground
   # labels:
   #   app: menace
 spec:
   type: ClusterIP
+  # ClusterIP: None 
+  selector:
+    app: menace
+    # department: sales
   ports:
-  - name: http
-    port: 3000
+  - protocol: TCP
+    port: 80
     targetPort: 3000
-  # selector:
-  #   app: menace
 ---
 ################
-# Endpoint
+# NodePort
 ###############
 apiVersion: v1
-kind: Endpoints
+kind: Service
 metadata:
-  name: menace
-  namespace: playground
+  name: np-service
+  # namespace: playground
   # labels:
   #   app: menace
-subsets:
-  - addresses:
-      - ip: 10.24.1.42
-    ports:
-      - port: 3000
+spec:
+  type: NodePort
+  # ClusterIP: None 
+  selector:
+    app: menace
+    # department: sales
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
 # ---
 # ################
-# # ExternalName
+# # Service
+# ###############
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: menace
+#   namespace: playground
+#   labels:
+#     app: menace
+# spec:
+#   type: LoadBalancer
+#   ports:
+#     - port: 3000
+#       targetPort: 3000
+#       protocol: TCP
+#       name: http
+#   selector:
+#     app: menace
+# ---
+# ################
+# # Service
 # ###############
 # apiVersion: v1
 # kind: Service
@@ -81,5 +108,40 @@ subsets:
 #   # labels:
 #   #   app: menace
 # spec:
-#   type: ExternalName
-#   externalName: lol.com
+#   type: ClusterIP
+#   ports:
+#   - name: http
+#     port: 3000
+#     targetPort: 3000
+#   # selector:
+#   #   app: menace
+# ---
+# ################
+# # Endpoint
+# ###############
+# apiVersion: v1
+# kind: Endpoints
+# metadata:
+#   name: menace
+#   namespace: playground
+#   # labels:
+#   #   app: menace
+# subsets:
+#   - addresses:
+#       - ip: 10.24.1.42
+#     ports:
+#       - port: 3000
+# # ---
+# # ################
+# # # ExternalName
+# # ###############
+# # apiVersion: v1
+# # kind: Service
+# # metadata:
+# #   name: menace
+# #   namespace: playground
+# #   # labels:
+# #   #   app: menace
+# # spec:
+# #   type: ExternalName
+# #   externalName: lol.com

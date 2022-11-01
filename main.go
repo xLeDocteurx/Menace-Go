@@ -1,13 +1,15 @@
 package main
-// TO DO RECHECKER TOUS LES USAGES DE POINTEURS
+// TO DO Une vraie gestion d'erreurs non cassantes
 
 
 import (
 	// "unsafe"
 	"os"
+    "io/ioutil"
 	"log"
-	// "reflect"
 	"fmt"
+	// "reflect"
+    "strings"
     "strconv"
     "encoding/json"
 	// "encoding/binary"
@@ -39,7 +41,31 @@ func check(message string, err error) {
 func main() {
 	fmt.Println("App is Starting...")
 
-	gameEngine := NewGameEngine()
+    files, err := ioutil.ReadDir("./saves")
+	check("ioutil.ReadDir : ", err)
+	fmt.Println("len(files) : ", len(files))
+	fmt.Println("files : ", files)
+	var txtFiles = []string{}
+    for _, file := range files {
+		if (!file.IsDir() && strings.Contains(file.Name(), ".txt")) {
+			txtFiles = append(txtFiles, file.Name())
+		}
+    }
+
+	var gameEngine GameEngine
+	if(len(files) > 0) {
+		binaryContent, err := ioutil.ReadFile("./saves/" + txtFiles[0])
+		check("ioutil.ReadFile : ", err)
+		// stringContent := string(binaryContent)
+		jsonContent := GameEngine{}
+		if err = json.Unmarshal(binaryContent, &jsonContent); err != nil {
+			fmt.Println("err : ", err)
+		}
+		// fmt.Println("jsonContent : ", jsonContent)
+		gameEngine = NewGameEngineWithSave(jsonContent)
+	} else {
+		gameEngine = NewGameEngine()
+	}
 	// fmt.Println("gameEngine : ", gameEngine)
 
 
@@ -75,14 +101,18 @@ func main() {
 		return c.SendString(string(historyJSON))
 	})
 
+	app.Get("/save", func(c *fiber.Ctx) error {
+		fileName := gameEngine.saveGameEngine()
+		if err != nil {
+			return err
+		}
+		return c.SendString("OK : " + fileName)
+	})
+
 	app.Get("/", func(c *fiber.Ctx) error {
 		startGameRes := gameEngine.startGame(c)
 		// fmt.Println("startGameRes : ", startGameRes)
 
-		Subdomains, err := json.Marshal(startGameRes.Subdomains)
-		if err != nil {
-			return err
-		}
 		DoILive, err := json.Marshal(startGameRes.DoILive)
 		if err != nil {
 			return err
@@ -102,7 +132,6 @@ func main() {
 
         // Render index template
         return c.Render("index", fiber.Map{
-            "Subdomains": string(Subdomains),
             "DoILive": string(DoILive),
             "WhoStartsNext": string(WhoStartsFirst),
 			"States": string(StatesJSON),
@@ -124,7 +153,7 @@ func main() {
 		// fmt.Println("endGameRes : ", endGameRes)
 		return c.SendString("endGameRes")
 	})
-	gameEngine.saveGameEngine()
+	// gameEngine.saveGameEngine()
 	go func() {
 		for range time.NewTicker(time.Hour).C {
 			gameEngine.saveGameEngine()
@@ -149,6 +178,7 @@ func main() {
 
 // STRUCTS
 func NewGameEngine() GameEngine {
+	fmt.Println("NewGameEngineWithSave")
 	whoStartsNext := "human"
 	var states []State
 	charset := []string{"0", "1", "2"}
@@ -165,8 +195,16 @@ func NewGameEngine() GameEngine {
 		[]EndGameReq{},
 	}
 }
+func NewGameEngineWithSave(save GameEngine) GameEngine {
+	fmt.Println("NewGameEngineWithSave")
+	fmt.Println("save.States length : ", len(save.States))
+	return GameEngine{
+		save.WhoStartsNext,
+		save.States,
+		save.EndGameReqs,
+	}
+}
 type GameEngine struct {
-	// Possible values "human" | "robot"
 	WhoStartsNext string
 	States []State
 	EndGameReqs []EndGameReq
@@ -200,7 +238,6 @@ func (this *GameEngine) makeStats() map[string]string {
 func (this *GameEngine) doILive() bool {
 	return true
 }
-
 func (this *GameEngine) startGame(c *fiber.Ctx) StartGameRes {
 	stats := this.makeStats()
 
@@ -219,7 +256,6 @@ func (this *GameEngine) startGame(c *fiber.Ctx) StartGameRes {
 	}
 
 	return StartGameRes{
-		c.Subdomains(),
 		this.doILive(),
 		this.WhoStartsNext,
 		this.States,
@@ -262,12 +298,13 @@ func (this *GameEngine) endGame(winner string, history []Turn) {
 		this.WhoStartsNext = "robot"
 	}
 }
-func (this *GameEngine) saveGameEngine() {
+func (this *GameEngine) saveGameEngine() string {
 	fmt.Println("saveGameEngine")
 	// File
 	now := time.Now()
+	file := "./saves/" + strconv.Itoa(now.Year()) + "-" + strconv.Itoa(int(now.Month())) + "-" + strconv.Itoa(now.Day()) + "." + strconv.Itoa(now.Hour()) + "-" + strconv.Itoa(now.Minute()) + ".txt"
 
-    f, err := os.Create("./saves/" + strconv.Itoa(now.Year()) + "-" + strconv.Itoa(int(now.Month())) + "-" + strconv.Itoa(now.Day()) + "." + strconv.Itoa(now.Hour()) + "-" + strconv.Itoa(now.Minute()) + ".txt")
+    f, err := os.Create(file)
     check("saveGameEngine() os.Create : ", err)
     defer f.Close()
 
@@ -280,6 +317,8 @@ func (this *GameEngine) saveGameEngine() {
 
 	fmt.Println("saveGameEngine done")
 	// TO DO db
+
+	return file
 }
 
 func NewState(id string) State {
@@ -384,7 +423,6 @@ type Weights struct {
 }
 
 type StartGameRes struct {
-	Subdomains []string
 	DoILive bool
 	WhoStartsFirst string
 	States []State

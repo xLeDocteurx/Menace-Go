@@ -3,7 +3,6 @@
     <title>This is Menace</title>
   </head>
   <body>
-    <i>{{.Subdomains}}</i></br>
     <h1>This is Menace</h1>
     <h2>Machine Educable Noughts And Crosses Engine</h2>
     <h3><a href="https://en.wikipedia.org/wiki/Matchbox_Educable_Noughts_and_Crosses_Engine" target="_blank">https://en.wikipedia.org/wiki/Matchbox_Educable_Noughts_and_Crosses_Engine</a></h3>
@@ -56,14 +55,12 @@
     </table>
   </body>
 
-  <script>Subdomains
-    const Subdomains = JSON.parse('{{.Subdomains}}');
+  <script>
     const doILive = JSON.parse('{{.DoILive}}');
     const whoStarts = JSON.parse('{{.WhoStartsNext}}');
     const states = JSON.parse('{{.States}}');
     const stats = JSON.parse('{{.Stats}}');
     
-    console.log('Subdomains : ', Subdomains);
     console.log('stats : ', stats);
     const statsContainer = document.getElementById("stats-container")
     for (let i = 0; i < Object.keys(stats).length; i++) {
@@ -178,7 +175,7 @@
         cellButtons[0].disabled = true;
       }
       // Make a POST request
-      fetch('http://localhost:3000', {
+      fetch(location.protocol + '//' + location.host, {
         method: 'POST',
         body: JSON.stringify({
           Winner: winner,
