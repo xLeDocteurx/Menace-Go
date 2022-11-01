@@ -1,3 +1,15 @@
 # Menace-Go
 
-A basic Golang, webbased implementation of menace
+A basic Golang, web based implementation of menace
+
+## Run
+```bash
+go run .
+```
+
+## Run
+```bash
+go run build
+```
+
+Tutorial by captain obvious
