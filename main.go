@@ -231,7 +231,7 @@ func (this *GameEngine) makeStats() map[string]string {
 	stats["robotWinsCount"] = strconv.Itoa(robotWinsCount)
 	stats["drawCount"] = strconv.Itoa(drawCount)
 	// stats["winRate"] = fmt.Sprintf("%f", float64(robotWinsCount) / float64(len(this.EndGameReqs)), 64)
-	stats["winRate"] = fmt.Sprintf("%f", float64(robotWinsCount) / (float64(robotWinsCount) + float64(humanWinsCount)), 64)
+	stats["winRate"] = fmt.Sprintf("%f", (float64(robotWinsCount) / (float64(robotWinsCount) + float64(humanWinsCount))) * 100, 64)
 
 	return stats
 }
@@ -277,13 +277,18 @@ func (this *GameEngine) endGame(winner string, history []Turn) {
 				currentStateIndex = stateIndex
 			}
 		}
+
+		fmt.Println("----------------------------------------")
+		fmt.Println("winner : ", winner)
+		fmt.Println("this.States[currentStateIndex] before : ", this.States[currentStateIndex])
 		if winner == "robot" {
-			this.States[currentStateIndex].reward(robotTurns[i].CurrentState, robotTurns[i].ChosenMove)
+			this.States[currentStateIndex].reward(robotTurns[i].ChosenMove)
 		} else if winner == "human" {
-			this.States[currentStateIndex].punish(robotTurns[i].CurrentState, robotTurns[i].ChosenMove)
+			this.States[currentStateIndex].punish(robotTurns[i].ChosenMove)
 		} else if winner == "draw" {
 			// ?
 		}
+		fmt.Println("this.States[currentStateIndex] after : ", this.States[currentStateIndex])
 	}
 
 	this.EndGameReqs = append(this.EndGameReqs, EndGameReq{
@@ -364,47 +369,47 @@ type State struct {
 	Id string
 	Weights Weights
 }
-func (this *State) reward(stateId string, chosenMove string) {
+func (this *State) reward(chosenMove string) {
 	switch chosenMove {
-	case "a":
+	case "A":
 		this.Weights.A += 1
-	case "b":
+	case "B":
 		this.Weights.B += 1
-	case "c":
+	case "C":
 		this.Weights.C += 1
-	case "d":
+	case "D":
 		this.Weights.D += 1
-	case "e":
+	case "E":
 		this.Weights.E += 1
-	case "f":
+	case "F":
 		this.Weights.F += 1
-	case "g":
+	case "G":
 		this.Weights.G += 1
-	case "h":
+	case "H":
 		this.Weights.H += 1
-	case "i":
+	case "I":
 		this.Weights.I += 1
 	}
 }
-func (this *State) punish(stateId string, chosenMove string) {
+func (this *State) punish(chosenMove string) {
 	switch chosenMove {
-	case "a":
+	case "A":
 		this.Weights.A -= 1
-	case "b":
+	case "B":
 		this.Weights.B -= 1
-	case "c":
+	case "C":
 		this.Weights.C -= 1
-	case "d":
+	case "D":
 		this.Weights.D -= 1
-	case "e":
+	case "E":
 		this.Weights.E -= 1
-	case "f":
+	case "F":
 		this.Weights.F -= 1
-	case "g":
+	case "G":
 		this.Weights.G -= 1
-	case "h":
+	case "H":
 		this.Weights.H -= 1
-	case "i":
+	case "I":
 		this.Weights.I -= 1
 	}
 }

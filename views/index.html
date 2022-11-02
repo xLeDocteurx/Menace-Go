@@ -99,12 +99,13 @@
     }
 
     function makeTurn(humanOrRobot, chosenMove) {
-        console.log('makeTurn (humanOrRobot, chosenMove) : ', humanOrRobot, chosenMove);
+      console.log('makeTurn (humanOrRobot, chosenMove) : ', humanOrRobot, chosenMove);
       document.getElementById(`cell-${chosenMove}`).innerText = currentPlayer == whoStarts ? 'X' : 'O';
-        // currentPlayer == 'human' && whoStarts == 'human' ? 'X' : 'O';
+      // currentPlayer == 'human' && whoStarts == 'human' ? 'X' : 'O';
       document.getElementById(`cell-${chosenMove}`).disabled = true;
       document.getElementById(`cell-${chosenMove}`).setAttribute('data-value', currentPlayer == 'human' ? '1' : '2');
-      history.push({ WhosTurn: currentPlayer, CurrentState: getCurrentState(), ChosenMove: chosenMove });
+      const state = getPreviousState(chosenMove);
+      history.push({ WhosTurn: currentPlayer, CurrentState: state, ChosenMove: chosenMove });
       currentPlayer = currentPlayer == 'human' ? 'robot' : 'human';
       document.getElementById('currentPlayer').innerText = currentPlayer;
 
@@ -154,18 +155,43 @@
       }
     }
 
-    function getCurrentState() {
-      const a = document.getElementById('cell-A').getAttribute('data-value');
-      const b = document.getElementById('cell-B').getAttribute('data-value');
-      const c = document.getElementById('cell-C').getAttribute('data-value');
-      const d = document.getElementById('cell-D').getAttribute('data-value');
-      const e = document.getElementById('cell-E').getAttribute('data-value');
-      const f = document.getElementById('cell-F').getAttribute('data-value');
-      const g = document.getElementById('cell-G').getAttribute('data-value');
-      const h = document.getElementById('cell-H').getAttribute('data-value');
-      const i = document.getElementById('cell-I').getAttribute('data-value');
-      return a + b + c + d + e + f + g + h + i;
-    }
+function getCurrentState() {
+  const a = document.getElementById('cell-A').getAttribute('data-value');
+  const b = document.getElementById('cell-B').getAttribute('data-value');
+  const c = document.getElementById('cell-C').getAttribute('data-value');
+  const d = document.getElementById('cell-D').getAttribute('data-value');
+  const e = document.getElementById('cell-E').getAttribute('data-value');
+  const f = document.getElementById('cell-F').getAttribute('data-value');
+  const g = document.getElementById('cell-G').getAttribute('data-value');
+  const h = document.getElementById('cell-H').getAttribute('data-value');
+  const i = document.getElementById('cell-I').getAttribute('data-value');
+  return a + b + c + d + e + f + g + h + i;
+}
+
+function getPreviousState(chosenMove) {
+  const currentState = getCurrentState()
+	switch (chosenMove) {
+	case "A":
+		currentState[0] = "0";
+	case "B":
+		currentState[1] = "0";
+	case "C":
+		currentState[2] = "0";
+	case "D":
+		currentState[3] = "0";
+	case "E":
+		currentState[4] = "0";
+	case "F":
+		currentState[5] = "0";
+	case "G":
+		currentState[6] = "0";
+	case "H":
+		currentState[7] = "0";
+	case "I":
+		currentState[8] = "0";
+	}
+  return currentState;
+}
 
     function endGame(winner, history) {
       document.getElementById(`who-wins`).innerText = `${winner} wins !`;
@@ -186,16 +212,16 @@
         //   'Content-type': 'application/json; charset=UTF-8' // The type of data you're sending
         }
       })
-        .then(function (response) {
+        .then((response) => {
           if (response.ok) {
             return response.json();
           }
           return Promise.reject(response);
         })
-        .then(function (data) {
+        .then((data) => {
           console.log(data);
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.warn('Something went wrong.', error);
         });
     }
