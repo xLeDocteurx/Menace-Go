@@ -1,9 +1,10 @@
-module github.com/xLeDocteurx/Menace-Go/docs
+module github.com/xLeDocteurx/Menace-Go
 
 go 1.18
 
 require (
 	github.com/gofiber/fiber/v2 v2.40.1
+	github.com/gofiber/swagger v0.1.8
 	github.com/gofiber/template v1.7.1
 )
 
@@ -21,7 +22,6 @@ require (
 	github.com/go-openapi/spec v0.20.7 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/go-vgo/robotgo v0.100.10 // indirect
-	github.com/gofiber/swagger v0.1.8 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.12 // indirect
