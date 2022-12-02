@@ -1,4 +1,4 @@
-module main
+module github.com/xLeDocteurx/Menace-Go/docs
 
 go 1.18
 
