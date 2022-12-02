@@ -7,7 +7,7 @@ WORKDIR /app
 COPY ./go.mod ./
 COPY ./go.sum ./
 COPY ./views ./views
-COPY ./saves ./saves
+COPY ./static ./static
 RUN go mod download
 
 COPY *.go ./
