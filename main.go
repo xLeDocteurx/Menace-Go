@@ -439,23 +439,23 @@ type State struct {
 func (this *State) reward(chosenMove string) {
 	switch chosenMove {
 	case "A":
-		this.Weights.A += 2
+		this.Weights.A += 3
 	case "B":
-		this.Weights.B += 2
+		this.Weights.B += 3
 	case "C":
-		this.Weights.C += 2
+		this.Weights.C += 3
 	case "D":
-		this.Weights.D += 2
+		this.Weights.D += 3
 	case "E":
-		this.Weights.E += 2
+		this.Weights.E += 3
 	case "F":
-		this.Weights.F += 2
+		this.Weights.F += 3
 	case "G":
-		this.Weights.G += 2
+		this.Weights.G += 3
 	case "H":
-		this.Weights.H += 2
+		this.Weights.H += 3
 	case "I":
-		this.Weights.I += 2
+		this.Weights.I += 3
 	}
 }
 func (this *State) draw(chosenMove string) {
