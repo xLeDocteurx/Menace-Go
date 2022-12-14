@@ -42,6 +42,16 @@ func check(message string, err error) {
 	}
 }
 
+// @title Maia Google MicroService
+// // @version 1.0
+// @description This service (maia-google-ms) is the link between maia and google APIs
+// // @termsOfService http://swagger.io/terms/
+// // @contact.name API Support
+// // @contact.email fiber@swagger.io
+// // @license.name Apache 2.0
+// // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// // @host localhost:8080
+// @BasePath /
 func main() {
 	fmt.Println("App is Starting...")
 
@@ -83,19 +93,19 @@ func main() {
 
 	app.Get("/swagger/*", swagger.HandlerDefault) // default
 
-	app.Get("/swagger/*", swagger.New(swagger.Config{ // custom
-		URL: "http://example.com/doc.json",
-		DeepLinking: false,
-		// Expand ("list") or Collapse ("none") tag groups by default
-		DocExpansion: "none",
-		// Prefill OAuth ClientId on Authorize popup
-		OAuth: &swagger.OAuthConfig{
-			AppName:  "OAuth Provider",
-			ClientId: "21bb4edc-05a7-4afc-86f1-2e151e4ba6e2",
-		},
-		// Ability to change OAuth2 redirect uri location
-		OAuth2RedirectUrl: "http://localhost:8080/swagger/oauth2-redirect.html",
-	}))
+	// app.Get("/swagger/*", swagger.New(swagger.Config{ // custom
+	// 	URL: "http://example.com/doc.json",
+	// 	DeepLinking: false,
+	// 	// Expand ("list") or Collapse ("none") tag groups by default
+	// 	DocExpansion: "none",
+	// 	// Prefill OAuth ClientId on Authorize popup
+	// 	OAuth: &swagger.OAuthConfig{
+	// 		AppName:  "OAuth Provider",
+	// 		ClientId: "21bb4edc-05a7-4afc-86f1-2e151e4ba6e2",
+	// 	},
+	// 	// Ability to change OAuth2 redirect uri location
+	// 	OAuth2RedirectUrl: "http://localhost:8080/swagger/oauth2-redirect.html",
+	// }))
 
 	// contains index.html outside the app folder
 	app.Static("/", "./static")
@@ -146,7 +156,13 @@ func main() {
 		return c.SendString("endGameRes")
 	})
 
-	// Monnitoring & management endpoints
+	// @Summary Gracefully Shut Down
+	// @Description Gracefully Shut Down : first test
+	// @Tags EDI
+	// @Accept */*
+	// // @Produce json
+	// @Success 200 {object} string
+	// @Router /edi/configuration/global/gracefulShutdown [get]
 	app.Get("/stats", func(c *fiber.Ctx) error {
 		statsJSON, err := json.Marshal(gameEngine.makeStats())
 		if err != nil {
@@ -155,6 +171,13 @@ func main() {
 		return c.SendString(string(statsJSON))
 	})
 
+	// @Summary Gracefully Shut Down
+	// @Description Gracefully Shut Down : first test
+	// @Tags EDI
+	// @Accept */*
+	// // @Produce json
+	// @Success 200 {object} string
+	// @Router /edi/configuration/global/gracefulShutdown [get]
 	app.Get("/states", func(c *fiber.Ctx) error {
 		statesJSON, err := json.Marshal(gameEngine.States)
 		if err != nil {
@@ -163,6 +186,13 @@ func main() {
 		return c.SendString(string(statesJSON))
 	})
 
+	// @Summary Gracefully Shut Down
+	// @Description Gracefully Shut Down : first test
+	// @Tags EDI
+	// @Accept */*
+	// // @Produce json
+	// @Success 200 {object} string
+	// @Router /edi/configuration/global/gracefulShutdown [get]
 	app.Get("/history", func(c *fiber.Ctx) error {
 		historyJSON, err := json.Marshal(gameEngine.EndGameReqs)
 		if err != nil {
@@ -171,6 +201,13 @@ func main() {
 		return c.SendString(string(historyJSON))
 	})
 
+	// @Summary Gracefully Shut Down
+	// @Description Gracefully Shut Down : first test
+	// @Tags EDI
+	// @Accept */*
+	// // @Produce json
+	// @Success 200 {object} string
+	// @Router /edi/configuration/global/gracefulShutdown [get]
 	app.Get("/save", func(c *fiber.Ctx) error {
 		fileName := gameEngine.saveGameEngine()
 		if err != nil {
